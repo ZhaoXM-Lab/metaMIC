@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='metaMIC',
       description='metaMIC: Reference-free Misassembly Identification and Correction of metagenomic assemblies',
@@ -16,11 +16,11 @@ setup(name='metaMIC',
       url='https://github.com/Seny-l/metaMIC',
       author='Senying Lai',
       license='MIT',
-      packages = ['metaMIC'],
-      package_data={
-          'metaMIC': ['*.py','*.sh']},
-      zip_safe=False,
+      packages = find_packages(exclude=['docs', 'tests', 'examples']),
+      package_data={'metaMIC' : ['*.py','*.sh']},
       entry_points={
-            'console_scripts': ['metaMIC=metaMIC.metaMIC:main'],
-      }
+            'console_scripts' : ['metaMIC=metaMIC.__main__:main'],
+      },
+      zip_safe=False
 )
+

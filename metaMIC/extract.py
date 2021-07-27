@@ -629,8 +629,9 @@ def KAD_cal(args):
                                         "temp/KAD/KAD_window_data.txt"), sep="\t")
 
 
-def main():
-    args = parseargs()
+def main(args = None):
+    if args is None:
+        args = parseargs()
     warnings.filterwarnings("ignore")
     os.makedirs(os.path.join(args.output, 'temp', 'read_feature'), exist_ok=True)
     os.makedirs(os.path.join(args.output, 'temp', 'coverage'), exist_ok=True)

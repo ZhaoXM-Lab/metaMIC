@@ -47,7 +47,16 @@ def main():
     train_data = pd.read_csv(args.data,sep="\t",index_col=0)
     train_label = pd.read_csv(args.label,sep="\t",header=None,index_col=0)
     train_data['label'] = list(train_label.loc[train_data.index,1])
-    features = ['coverage_width', 'deviation_width', 'normalized_deviation','window_cov_dev', 'fragment_width', 'fragment_deviation_width','normalized_fragment_deviation', 'window_frag_cov_dev','proper_read_ratio', 'clipped_read_ratio', 'supplementary_read_ratio','inversion_read_ratio', 'discordant_loc_ratio', 'discordant_size_ratio','read_breakpoint_ratio', 'proper_read_width', 'clipped_read_width','supplementary_read_width', 'inversion_read_width','discordant_loc_width', 'discordant_size_width', 'read_breakpoint_max','disagree_width', 'correct_portion', 'ambiguous_portion','insert_portion', 'deletion_portion', 'disagree_portion', 'mean_KAD','abnormal_KAD_ratio', 'dev_KAD', 'KAD_width', 'coverage_diff','label']
+    features = ['coverage_width', 'deviation_width', 'normalized_deviation','window_cov_dev',
+                'fragment_width', 'fragment_deviation_width','normalized_fragment_deviation',
+                'window_frag_cov_dev','proper_read_ratio', 'clipped_read_ratio',
+                'supplementary_read_ratio','inversion_read_ratio', 'discordant_loc_ratio',
+                'discordant_size_ratio','read_breakpoint_ratio', 'proper_read_width',
+                'clipped_read_width','supplementary_read_width', 'inversion_read_width',
+                'discordant_loc_width', 'discordant_size_width', 'read_breakpoint_max',
+                'disagree_width', 'correct_portion', 'ambiguous_portion','insert_portion',
+                'deletion_portion', 'disagree_portion', 'mean_KAD','abnormal_KAD_ratio',
+                'dev_KAD', 'KAD_width', 'coverage_diff','label']
     train_data = train_data.loc[:,features]
     training(args,train_data)
 

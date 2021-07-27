@@ -27,6 +27,8 @@ import requests
 import shutil
 import tarfile
 import gzip
+# package
+from metaMIC.extract import main as extract_command
 
 base_path = os.path.split(__file__)[0]
 contig_features = [
@@ -397,6 +399,17 @@ def mapping(options):
     return options
 
 
+class submodule_args:
+    def __init__(self, options):
+        self.bam = options.bamfile
+        self.contig = options.assemblies
+        self.output = options.output
+        self.mlen = options.min_length
+        self.pileup = options.pileup
+        self.samtools = options.samtools
+        self.jellyfish = options.jellyfish
+        self.thread = options.threads
+        
 def extract_feature(options):
     """
     Extract four types of features from bamfiles and generate contig-based/window-based feature matrix
@@ -406,17 +419,18 @@ def extract_feature(options):
     if status:
         print("feature files exist and will not re-extract features")
     else:
-        extract_command = ' '.join(['python',
-                                    os.path.join(base_path,"extract.py"),
-                                    '--bam', options.bamfile,
-                                    '--contig', options.assemblies,
-                                    '--output', options.output,
-                                    '--mlen', str(options.min_length),
-                                    '--pileup', options.pileup,
-                                    '--samtools', options.samtools,
-                                    '--jellyfish', options.jellyfish,
-                                    "--thread", str(options.threads)])
-        os.system(extract_command)
+        # extract_command = ' '.join(['python',
+        #                             os.path.join(base_path,"extract.py"),
+        #                             '--bam', options.bamfile,
+        #                             '--contig', options.assemblies,
+        #                             '--output', options.output,
+        #                             '--mlen', str(options.min_length),
+        #                             '--pileup', options.pileup,
+        #                             '--samtools', options.samtools,
+        #                             '--jellyfish', options.jellyfish,
+        #                             "--thread", str(options.threads)])        
+        extract_command(submodule_args(options))
+        # os.system(extract_command)
         # check output features
         check_feature(options)
     # Generate contig-based/window-based matrix
