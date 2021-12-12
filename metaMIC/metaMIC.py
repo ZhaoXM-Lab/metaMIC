@@ -27,6 +27,7 @@ import requests
 import shutil
 import tarfile
 import gzip
+from .extract import extract_features
 
 base_path = os.path.split(__file__)[0]
 contig_features = [
@@ -222,6 +223,15 @@ def get_opts(args):
         help="The assembler-specific model or user-trained model used for assembled fasta file [MEGAHIT/IDBA_UD/[new training model specified by users]]")
 
     predict.add_argument(
+        "--st",
+        dest="score_thred",
+        required=False,
+        type=float,
+        default=None,
+        help="Threshold of metaMIC contig score for correcting misassemblies in metagenomics[default:0.8]"
+    )
+
+    predict.add_argument(
         "-l",
         "--mlen",
         dest="min_length",
@@ -319,11 +329,20 @@ def get_file_md5(fname):
 def download_model(path, MD5):
     os.makedirs(os.path.join(base_path, 'model'),exist_ok=True)
     download_path = os.path.join(base_path, 'model',os.path.split(path)[1])
-
+    print(download_path)
     with requests.get(path, stream=True) as r:
         with open(download_path, 'wb') as f:
             shutil.copyfileobj(r.raw, f)
     print('Download finished. Checking MD5...')
+    if os.path.exists(os.path.join(base_path, 'model', 'MEGAHIT')):
+        shutil.rmtree(os.path.join(base_path, 'model', 'MEGAHIT'))
+
+    if os.path.exists(os.path.join(base_path, 'model', 'IDBA_UD')):
+        shutil.rmtree(os.path.join(base_path, 'model', 'IDBA_UD'))
+
+    if os.path.exists(os.path.join(base_path, 'model', 'metaSPAdes')):
+        shutil.rmtree(os.path.join(base_path, 'model', 'metaSPAdes'))
+
 
     if get_file_md5(download_path) == MD5:
         try:
@@ -361,6 +380,9 @@ def download():
     download_model('https://zenodo.org/record/4781819/files/MEGAHIT.tar.gz', 'da9038af3582eea04288775a72003e6b')
     print('Downloading model for IDBA_UD')
     download_model('https://zenodo.org/record/4781819/files/IDBA_UD.tar.gz', '9f6835d3033a177055343ecaa78889bc')
+    print('Downloading model for metaSPAdes.')
+    download_model('https://zenodo.org/record/5768805/files/metaSPAdes.tar.gz',
+                   'md5:0c759a28d0ba3490eeba098395c88586 ')
 
 def filter_contig(options):
     """
@@ -406,17 +428,7 @@ def extract_feature(options):
     if status:
         print("feature files exist and will not re-extract features")
     else:
-        extract_command = ' '.join(['python',
-                                    os.path.join(base_path,"extract.py"),
-                                    '--bam', options.bamfile,
-                                    '--contig', options.assemblies,
-                                    '--output', options.output,
-                                    '--mlen', str(options.min_length),
-                                    '--pileup', options.pileup,
-                                    '--samtools', options.samtools,
-                                    '--jellyfish', options.jellyfish,
-                                    "--thread", str(options.threads)])
-        os.system(extract_command)
+        extract_features(options)
         # check output features
         check_feature(options)
     # Generate contig-based/window-based matrix
@@ -699,9 +711,6 @@ def breakpoint_detect(options, data):
                                     "anomaly_score",
                                     "anomaly_thred",
                                     "contig_length"]
-        breakpoint_result = breakpoint_result.loc[breakpoint_result['misassembly_breakpoint'] > options.split_length, ]
-        breakpoint_result = breakpoint_result.loc[(
-            breakpoint_result['contig_length'] - breakpoint_result['misassembly_breakpoint']) > options.split_length, ]
         breakpoint_result.to_csv(os.path.join(options.output,
                                               "misassembly_breakpoint.txt"), sep="\t")
     else:
@@ -711,7 +720,10 @@ def breakpoint_detect(options, data):
             sys.exit(1)
 
         contig_score = pd.read_csv(os.path.join(options.output, 'metaMIC_contig_score.txt'), sep="\t", index_col=0)
-        score_cut = findcut(options, contig_score)
+        if options.score_thred:
+            score_cut = options.score_thred
+        else:
+            score_cut = findcut(options, contig_score)
         filtered = contig_score.loc[contig_score['metaMIC_contig_score'] > score_cut, ]
         data = data[data['contig'].isin(filtered.index)]
         score_pred_data = Isolation_forest(options, data)
@@ -747,8 +759,6 @@ def breakpoint_detect(options, data):
                                     "anomaly_thred",
                                     'metaMIC_contig_score',
                                     "contig_length"]
-        breakpoint_result = breakpoint_result.loc[breakpoint_result['misassembly_breakpoint'] > options.split_length, ]
-        breakpoint_result = breakpoint_result.loc[(breakpoint_result['contig_length'] - breakpoint_result['misassembly_breakpoint']) > options.split_length, ]
         breakpoint_result.to_csv(os.path.join(options.output,
                                               "misassembly_breakpoint.txt"), sep="\t")
     return breakpoint_result
@@ -786,15 +796,9 @@ def correct(options, breakpoint_result):
     corrected_file.close()
     print("A total of " + str(breakpoint_result.shape[0]) + " misassembled contigs are corrected")
 
-
+from .train import train
 def train_model(options, data):
-    train_commond = ' '.join(['python3',
-                              os.path.join(base_path, "train.py"),
-                              '--data', data,
-                              '--label', options.label,
-                              "--train", options.assembler,
-                              "--thread", str(options.threads)])
-    os.system(train_commond)
+    train(data, options)
 
 
 def bamindex(options):
