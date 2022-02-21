@@ -171,7 +171,7 @@ The output folder will contain
 4. Fasta file of corrected contigs: **metaMIC_corrected_contigs.fa**
 5. Some intermediate files
 
-For more details about the output, [read the docs](http:)
+For more details about the output, [read the docs](https://github.com/ZhaoXM-Lab/metaMIC/blob/patch-1/docs/output.md)
 
 ## Complete option list
 metaMIC:
