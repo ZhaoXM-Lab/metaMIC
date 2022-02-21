@@ -171,7 +171,7 @@ The output folder will contain
 4. Fasta file of corrected contigs: **metaMIC_corrected_contigs.fa**
 5. Some intermediate files
 
-For more details about the output, please read the docs.
+Please read the docs for more details about the output.
 
 ## Complete option list
 metaMIC:
