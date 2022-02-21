@@ -69,7 +69,7 @@ export PATH=`pwd`/bin:$PATH
 ```
 git clone https://github.com/ZhaoXM-Lab/metaMIC.git
 ```
-- install and download [training models](https://zenodo.org/record/4781819#.YKm_omYzZTY) 
+- install and download [training models](https://zenodo.org/record/5768805#.YhLnCvVBzOQ) 
 
 ```
 cd metaMIC
