@@ -144,7 +144,7 @@ metaMIC train -o $output_dir -a $New_model_name --label $contig_label
 ```
 
 
-For more details about the usage of metaMIC, [read the docs](http:)
+Please read the docs for more details about the usage of metaMIC.
 
 ## Example
 
