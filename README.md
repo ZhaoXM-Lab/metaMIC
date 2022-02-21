@@ -233,18 +233,19 @@ optional arguments:
                         fasta file of assembled contigs
   -a ASSEMBLER, --assembler ASSEMBLER
                         The assembler-specific model or user-trained model
-                        used for assembled fasta file [MEGAHIT/IDBA_UD/[new
+                        used for assembled fasta file [MEGAHIT/IDBA_UD/metaSPAdes/[new
                         training model specified by users]]
   -l MIN_LENGTH, --mlen MIN_LENGTH
                         Minimum contig length [default: 5000bp]
   -s SPLIT_LENGTH, --slen SPLIT_LENGTH
-                        Minimum length of splitted fragments [default: 1000bp]
+                        Minimum length of split fragments [default: 1000bp]
   --nb BREAK_COUNT      Threshold of read breakpoint counts for correcting
-                        misassemblies in metagenomics
+                        misassemblies 
   --rb BREAK_RATIO      Threshold of read breakpoint ratio for correcting
-                        misassemblies in metagenomics
+                        misassemblies 
   --at ANOMALY_THRED    Threshold of anomaly score for correcting
-                        misassemblies in metagenomics
+                        misassemblies 
+  --st SCORE_THRED      Threshold of contig score for correcting misassemblies                        
                         
 usage: metaMIC train [-h] -o OUTPUT [--label LABEL] [-a ASSEMBLER]
                      [-t THREADS]
@@ -259,3 +260,4 @@ optional arguments:
   -t THREADS, --threads THREADS
                         Maximum number of CPUs [default: 8]                        
 ```
+
